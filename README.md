@@ -21,18 +21,20 @@ To get started add the following config to `config/config.exs`.
 ```elixir
 config :doorman,
   repo: MyApp.Repo,
-  user_module: MyApp.User
+  user_module: MyApp.User,
+  login_strategy: Doorman.Login.Session
 ```
 
-Next add the `Doorman` plug with the desired strategy. Currently
-`Doorman.Strategy.Session` is the only available strategy.
+Next add the `Doorman` plug which assigns `current_user` on `conn`.
 
 ```elixir
 plug Doorman, Doorman.Strategy.Session
 ```
 
-Finally, after authenticating your user call your strategies `login` method.
+Finally, after authenticating your user call the `Doorman.login/2` method in
+your conn pipeline also passing the user.
+
 
 ```elixir
-conn |> Doorman.Strategy.Session.login(user) |> redirect(to: "/")
+conn |> Doorman.login(user) |> redirect(to: "/")
 ```

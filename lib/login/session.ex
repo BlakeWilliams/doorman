@@ -1,4 +1,6 @@
-defmodule Doorman.Strategy.Session do
+defmodule Doorman.Login.Session do
+  @behaviour Doorman.Login
+
   def login(conn, user) do
     conn
     |> Plug.Conn.put_session(:user_id, user.id)
