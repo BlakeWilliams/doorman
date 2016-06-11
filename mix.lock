@@ -1,0 +1,1 @@
+%{"plug": {:hex, :plug, "1.1.5", "de5645c18170415a72b18cc3d215c05321ddecac27a15acb923742156e98278b", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, optional: true]}]}}
