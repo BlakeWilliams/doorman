@@ -36,6 +36,15 @@ defmodule Doorman.Strategy.SessionTest do
     conn = conn
       |> Plug.Conn.put_session(:user_id, @invalid_id)
 
-    assert {:error, _reason} = Doorman.Strategy.Session.find_user(conn)
+    expected_reason = Doorman.Strategy.Session.errors[:no_user]
+    assert {:error, ^expected_reason} = Doorman.Strategy.Session.find_user(conn)
+  end
+
+  test "find_user returns error when session user_id is nil" do
+    Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
+    conn = conn
+
+    expected_reason = Doorman.Strategy.Session.errors[:nil_user_id]
+    assert {:error, ^expected_reason} = Doorman.Strategy.Session.find_user(conn)
   end
 end

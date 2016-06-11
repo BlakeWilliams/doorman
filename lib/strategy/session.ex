@@ -9,9 +9,20 @@ defmodule Doorman.Strategy.Session do
     repo = Application.get_env(:doorman, :repo) # Constable.Repo
     user_module = Application.get_env(:doorman, :user_module) # Constable.User
 
-    case repo.get(user_module, id) do
-      nil -> {:error, "Could not find user"}
-      user -> {:ok, user}
+    if id == nil do
+      {:error, errors[:nil_user_id]}
+    else
+      case repo.get(user_module, id) do
+        nil -> {:error, errors[:no_user]}
+        user -> {:ok, user}
+      end
     end
+  end
+
+  def errors do
+    %{
+      nil_user_id: "Session's user_id can't be nil",
+      no_user: "Could not find user"
+    }
   end
 end
