@@ -6,8 +6,8 @@ defmodule Doorman.Strategy.Session do
 
   def find_user(conn) do
     id = Plug.Conn.get_session(conn, :user_id)
-    repo = Application.get_env(:doorman, :repo) # Constable.Repo
-    user_module = Application.get_env(:doorman, :user_module) # Constable.User
+    repo = Application.get_env(:doorman, :repo)
+    user_module = Application.get_env(:doorman, :user_module)
 
     if id == nil do
       {:error, errors[:nil_user_id]}
