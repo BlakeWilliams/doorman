@@ -10,7 +10,7 @@ defmodule Doorman.Mixfile do
      start_permanent: Mix.env == :prod,
      description: "Tools to make Elixir authentication simple and flexible",
      package: package,
-     docs: [extras: ["README.md"], main: "README"],
+     docs: [extras: ["README.md"], main: "readme"],
      deps: deps]
   end
 
