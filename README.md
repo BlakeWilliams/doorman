@@ -51,7 +51,7 @@ defmodule MyApp.User do
 
   def create_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:email, :oauth_token])
+    |> cast(params, ~w(email password))
     |> hash_password
   end
 end
