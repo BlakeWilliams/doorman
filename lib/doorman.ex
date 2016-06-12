@@ -1,17 +1,25 @@
 defmodule Doorman do
+  @moduledoc """
+  A plug for finding the current user based on the strategy passed to `init/1`.
+
+  The strategy passed in must implmenent the `Doorman.Login` behaviour.
+
+  ## Example
+
+  ```
+  plug Doorman, Doorman.Login.Session
+  ```
+  """
+  @behaviour Plug
   import Plug.Conn
 
-  # Public API
-
-  def login(conn, user) do
-    strategy = Application.get_env(:doorman, :login_strategy)
-    strategy.login(conn, user)
-  end
-
-  # Plug Callbacks
-
   def init(nil) do
-    Application.get_env(:doorman, :login_strategy)
+    raise ArgumentError, """
+    `plug Doorman` must be passed a module that implements the `Doorman.Login`
+    behaviour.
+
+    You may want `plug Doorman, Doorman.Login.Auth`
+    """
   end
   def init(strategy) do
     strategy

@@ -17,29 +17,13 @@ defmodule DoormanTest do
     end
   end
 
-  defmodule FakeLoginStrategy do
-    def login(conn, user), do: {conn, user}
+  test "init/1 raises an error when passed nil" do
+    assert_raise ArgumentError, fn ->
+      Doorman.init(nil)
+    end
   end
 
-  test "login delegates to configured login_strategy" do
-    Mix.Config.persist([doorman: %{login_strategy: FakeLoginStrategy}])
-
-    fake_conn = %{conn: true}
-    fake_user = %{user: true}
-
-    {conn, user} = Doorman.login(fake_conn, fake_user)
-
-    assert conn == fake_conn
-    assert user == fake_user
-  end
-
-  test "init/1 strategy defaults to configured strategy" do
-    Mix.Config.persist([doorman: %{login_strategy: FakeLoginStrategy}])
-
-    assert Doorman.init(nil) == FakeLoginStrategy
-  end
-
-  test "init/1 strategy uses passed in strategy if provided" do
+  test "init/1 strategy uses passed in strategy" do
     assert Doorman.init(Fake) == Fake
   end
 

@@ -3,13 +3,14 @@ defmodule Doorman.Mixfile do
 
   def project do
     [app: :doorman,
-     version: "0.0.2",
+     version: "0.0.3",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      description: "Tools to make Elixir authentication simple and flexible",
      package: package,
+     docs: [extras: ["README.md"], main: "README"],
      deps: deps]
   end
 
@@ -18,7 +19,11 @@ defmodule Doorman.Mixfile do
   end
 
   defp deps do
-    [{:plug, "~> 1.1.5"}]
+    [{:plug, "~> 1.1.5"},
+     {:comeonin, "~> 2.4.0"},
+     {:ecto, "~> 2.0.0-rc.5", only: :test},
+     {:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.11", only: :dev}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support", "test"]
