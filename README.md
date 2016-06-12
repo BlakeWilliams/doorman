@@ -3,7 +3,7 @@
 Modules and functions to make authentication with Plug/Phoenix and Ecto easy
 without tons of configuration or boxing users into rigid framework.
 
-You can find more in-depth [documentation here](https://hexdocs.pm/doorman).
+You can find more in-depth [documentation here](https://hexdocs.pm/doorman/).
 
 ## Installation
 
