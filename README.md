@@ -36,7 +36,7 @@ Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
 password and put it into the changeset as `password_digest`.
 
 
-```
+```elixir
 defmodule MyApp.User do
   use MyApp.Web, :model
   use Doorman.Auth.Bcrypt
@@ -61,7 +61,7 @@ Finally, we can add our plug so we can have access to `current_user` on
 `conn.assigns`. A login strategy must to be passed in as an argument so Doorman
 can find the current user.
 
-```
+```elixir
 plug Doorman, Doorman.Login.Session
 ```
 
@@ -69,7 +69,7 @@ plug Doorman, Doorman.Login.Session
 
 To create a user we can use the `MyApp.create_changeset/2` function we defined.
 
-```
+```elixir
 defmodule MyApp.UserController do
   alias MyApp.User
 
@@ -95,7 +95,7 @@ end
 
 To accept logins we can use `Doorman.Login.Session.login/2`.
 
-```
+```elixir
 defmodule MyApp.SessionController do
   import Doorman.Login.Session, only: [login: 2]
 
@@ -126,7 +126,7 @@ To require a user to be authenticated the `Doorman.RequireLogin` plug can be
 used. It requires a function to be passed to it in order to handle
 unauthenticated requests.
 
-```
+```elixir
 plug Doorman.RequireLogin, &redirect_to_login/1
 
 defp redirect_to_login(conn) do
