@@ -25,15 +25,15 @@ config :doorman,
 
 ## Phoenix Quick Start
 
-First generate a user model with a `password_digest` field.
+First generate a user model with a `hashed_password` field.
 
 ```sh
-$ mix ecto.gen.model User users email password_digest
+$ mix ecto.gen.model User users email hashed_password 
 ```
 
 Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
 `password` field. `hash_password/1` is used in the changeset to hash our
-password and put it into the changeset as `password_digest`.
+password and put it into the changeset as `hashed_password`.
 
 
 ```elixir
@@ -43,7 +43,7 @@ defmodule MyApp.User do
 
   schema "users" do
     field :email, :string
-    field :password_digest, :string
+    field :hashed_password, :string
     field :password, :string, virtual: true
 
     timestamps

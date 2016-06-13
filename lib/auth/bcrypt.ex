@@ -11,7 +11,7 @@ defmodule Doorman.Auth.Bcrypt do
   read from and which database field to put the hashed password on.
 
   The default value for `virtual_field` is `password` and the default for
-  `database_field` is `password_digest`.
+  `database_field` is `hashed_password`.
 
   ## Example
 
@@ -66,7 +66,7 @@ defmodule Doorman.Auth.Bcrypt do
       end
 
       def authenticate(user, password) do
-        Bcrypt.checkpw(password, user.password_digest)
+        Bcrypt.checkpw(password, user.hashed_password)
       end
     end
   end
@@ -74,7 +74,7 @@ defmodule Doorman.Auth.Bcrypt do
   defp default_options do
     %{
       virtual_field: :password,
-      database_field: :password_digest,
+      database_field: :hashed_password,
     }
   end
 end
