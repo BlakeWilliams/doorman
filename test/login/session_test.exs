@@ -16,7 +16,7 @@ defmodule Doorman.Login.SessionTest do
     end
   end
 
-  test "login sets :user_id on conn.session" do
+  test "login/1 sets :user_id on conn.session" do
     conn
     |> Plug.Conn.put_session(:user_id, @valid_id)
 
@@ -25,28 +25,19 @@ defmodule Doorman.Login.SessionTest do
     assert Plug.Conn.get_session(conn, :user_id) == 1
   end
 
-  test "find_user returns {:ok, user} when exists" do
+  test "get_current_user/1 returns user when exists" do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
       |> Plug.Conn.put_session(:user_id, @valid_id)
 
-    assert {:ok, _user} = Session.find_user(conn)
+    assert Session.get_current_user(conn)
   end
 
-  test "find_user returns {:error, reason} when does not exist" do
+  test "get_current_user/1 returns nil when user does not exist" do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
       |> Plug.Conn.put_session(:user_id, @invalid_id)
 
-    expected_reason = Session.errors[:no_user]
-    assert {:error, ^expected_reason} = Session.find_user(conn)
-  end
-
-  test "find_user returns error when session user_id is nil" do
-    Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
-    conn = conn
-
-    expected_reason = Session.errors[:nil_user_id]
-    assert {:error, ^expected_reason} = Session.find_user(conn)
+    refute Session.get_current_user(conn)
   end
 end

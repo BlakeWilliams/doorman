@@ -62,7 +62,7 @@ Finally, we can add our plug so we can have access to `current_user` on
 can find the current user.
 
 ```elixir
-plug Doorman, Doorman.Login.Session
+plug Doorman.Login.Session
 ```
 
 ### Creating Users
