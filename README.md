@@ -3,6 +3,9 @@
 Modules and functions to make authentication with Plug/Phoenix and Ecto easy
 without tons of configuration or boxing users into rigid framework.
 
+The primary goal of Doorman is to build an opinionated interface and easy to use
+API on top of flexible modules that can also be used directly.
+
 You can find more in-depth [documentation here](https://hexdocs.pm/doorman/).
 
 ## Installation
@@ -20,6 +23,7 @@ Then add the configuration to `config/config.exs`.
 ```elixir
 config :doorman,
   repo: MyApp.Repo,
+  secure_with: Doorman.Auth.Bcrypt,
   user_module: MyApp.User,
 ```
 
@@ -39,7 +43,7 @@ password and put it into the changeset as `hashed_password`.
 ```elixir
 defmodule MyApp.User do
   use MyApp.Web, :model
-  use Doorman.Auth.Bcrypt
+  import Doorman.Auth.Bcrypt, only: [hash_password: 1]
 
   schema "users" do
     field :email, :string
@@ -93,27 +97,21 @@ end
 
 ### Logging in users
 
-To accept logins we can use `Doorman.Login.Session.login/2`.
+To login users we can use `Doorman.authenticate` and `Doorman.Session.login/2`.
 
 ```elixir
 defmodule MyApp.SessionController do
   import Doorman.Login.Session, only: [login: 2]
 
   def create(conn, %{"email" => email, "password" => "password"})
-    if user = MyApp.Repo.get_by(MyApp.User, email: email) do
-      if MyApp.User.authenticate(user, password) do
-        conn
-        |> login(user) # Sets :user_id on conn's session
-        |> put_flash(:notice, "Successfully logged in")
-        |> redirect(to: "/")
-      else
-        conn
-        |> put_flash(:error, "Password was incorrect")
-        |> render "new.html"
-      end
+    if Doorman.authenticate(email, password) do
+      conn
+      |> login(user) # Sets :user_id on conn's session
+      |> put_flash(:notice, "Successfully logged in")
+      |> redirect(to: "/")
     else
       conn
-      |> put_flash(:error, "No account for provided email found")
+      |> put_flash(:error, "No user found with the provided credentials")
       |> render "new.html"
     end
   end
@@ -127,9 +125,7 @@ used. It requires a function to be passed to it in order to handle
 unauthenticated requests.
 
 ```elixir
-plug Doorman.RequireLogin, &redirect_to_login/1
-
-defp redirect_to_login(conn) do
-  conn |> redirect(to: session_path(conn, :new)) |> Plug.Conn.halt
+plug Doorman.RequireLogin, fn(conn) ->
+  conn |> redirect(to: "/") |> Plug.Conn.halt
 end
 ```

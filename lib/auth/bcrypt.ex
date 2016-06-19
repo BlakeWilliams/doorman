@@ -8,15 +8,11 @@ defmodule Doorman.Auth.Bcrypt do
 
   ## Usage
 
-  In an Ecto model call `use Doorman.Auth.Bcrypt`. This will add two functions
-  to your module. `hash_password/1` and `authenticate/2`.
-
   ## Example
 
   ```
   defmodule User do
-    use  Ecto.Schema
-    use Doorman.Auth.Bcrypt
+    import Doorman.Auth.Bcrypt, only: [hash_password: 1]
 
     import Ecto.Changeset
 
@@ -38,30 +34,17 @@ defmodule Doorman.Auth.Bcrypt do
   alias Comeonin.Bcrypt
   alias Ecto.Changeset
 
-  @virtual_field :password
-  @database_field :hashed_password
-
-  defmacro __using__(_opts) do
-    quote do
-      import unquote(__MODULE__), only: [hash_password: 1]
-
-      def authenticate(user, password) do
-        unquote(__MODULE__).authenticate(user, password)
-      end
-    end
-  end
-
   @doc """
   Takes a changeset and turns the virtual `password` field into a
   `hashed_password` change on the changeset.
   """
   def hash_password(changeset) do
-    password = Ecto.Changeset.get_change(changeset, @virtual_field)
+    password = Ecto.Changeset.get_change(changeset, :password)
 
     if password do
       hashed_password = Bcrypt.hashpwsalt(password)
       changeset
-      |> Changeset.put_change(@database_field, hashed_password)
+      |> Changeset.put_change(:hashed_password, hashed_password)
     else
       changeset
     end

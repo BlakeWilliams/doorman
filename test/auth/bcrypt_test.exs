@@ -1,9 +1,10 @@
 defmodule Doorman.Auth.BcryptTest do
   use Doorman.ConnCase
 
+  alias Doorman.Auth.Bcrypt
+
   defmodule FakeUser do
     use Ecto.Schema
-    use Doorman.Auth.Bcrypt
     import Ecto.Changeset
 
     schema "fake_users" do
@@ -14,7 +15,7 @@ defmodule Doorman.Auth.BcryptTest do
     def create_changeset(changes) do
       %__MODULE__{}
       |> cast(changes, ~w(password))
-      |> hash_password
+      |> Doorman.Auth.Bcrypt.hash_password
     end
   end
 
@@ -34,13 +35,13 @@ defmodule Doorman.Auth.BcryptTest do
     password = "secure"
     user = %FakeUser{hashed_password: Comeonin.Bcrypt.hashpwsalt(password)}
 
-    assert FakeUser.authenticate(user, password)
+    assert Bcrypt.authenticate(user, password)
   end
 
   test "authenticate returns false when password does not match" do
     password = "secure"
     user = %FakeUser{hashed_password: Comeonin.Bcrypt.hashpwsalt(password)}
 
-    refute FakeUser.authenticate(user, "wrong")
+    refute Bcrypt.authenticate(user, "wrong")
   end
 end
