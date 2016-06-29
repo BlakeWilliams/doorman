@@ -14,7 +14,7 @@ Add doorman to your dependencies in `mix.exs`.
 
 ```elixir
 def deps do
-  [{:doorman, "~> 0.0.4"}]
+  [{:doorman, "~> 0.1.0"}]
 end
 ```
 
