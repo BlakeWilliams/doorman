@@ -24,7 +24,7 @@ Then add the configuration to `config/config.exs`.
 config :doorman,
   repo: MyApp.Repo,
   secure_with: Doorman.Auth.Bcrypt,
-  user_module: MyApp.User,
+  user_module: MyApp.User
 ```
 
 ## Phoenix Quick Start
@@ -32,7 +32,7 @@ config :doorman,
 First generate a user model with a `hashed_password` field.
 
 ```sh
-$ mix ecto.gen.model User users email hashed_password 
+$ mix phoenix.gen.model User users email hashed_password
 ```
 
 Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
@@ -75,6 +75,7 @@ To create a user we can use the `MyApp.create_changeset/2` function we defined.
 
 ```elixir
 defmodule MyApp.UserController do
+  use MyApp.Web, :controller
   alias MyApp.User
 
   def new(conn, _params) do
@@ -101,9 +102,10 @@ To login users we can use `Doorman.authenticate` and `Doorman.Session.login/2`.
 
 ```elixir
 defmodule MyApp.SessionController do
+  use Myapp.Web, :controller
   import Doorman.Login.Session, only: [login: 2]
 
-  def create(conn, %{"email" => email, "password" => "password"})
+  def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
     if user = Doorman.authenticate(email, password) do
       conn
       |> login(user) # Sets :user_id on conn's session
