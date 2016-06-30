@@ -5,8 +5,8 @@ defmodule Doorman do
   """
 
   @doc """
-  Authenticates a user by their email and password. Returns true if the user is
-  found and the password is correct, otherwise false.
+  Authenticates a user by their email and password. Returns the user if the
+  user is found and the password is correct, otherwise nil.
 
   Requires `user_module`, `secure_with`, and `repo` to be configured via
   `Mix.Config`. See [README.md] for an example.
@@ -17,7 +17,11 @@ defmodule Doorman do
   """
   def authenticate(email, password) do
     user = repo_module.get_by(user_module, email: email)
-    user && authenticate_user(user, password)
+    if user && authenticate_user(user, password) do
+      user
+    else
+      nil
+    end
   end
 
   @doc """

@@ -104,7 +104,7 @@ defmodule MyApp.SessionController do
   import Doorman.Login.Session, only: [login: 2]
 
   def create(conn, %{"email" => email, "password" => "password"})
-    if Doorman.authenticate(email, password) do
+    if user = Doorman.authenticate(email, password) do
       conn
       |> login(user) # Sets :user_id on conn's session
       |> put_flash(:notice, "Successfully logged in")
