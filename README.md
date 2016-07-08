@@ -122,12 +122,23 @@ end
 
 ### Requiring Authentication
 
-To require a user to be authenticated the `Doorman.RequireLogin` plug can be
-used. It requires a function to be passed to it in order to handle
-unauthenticated requests.
+To require a user to be authenticated you can build a simple plug around
+`Doorman.logged_in?/1`.
 
 ```elixir
-plug Doorman.RequireLogin, fn(conn) ->
-  conn |> redirect(to: "/") |> Plug.Conn.halt
+defmodule MyApp.RequireLogin do
+  import Plug.Conn
+
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    if Doorman.logged_in?(conn) do
+      conn
+    else
+      conn
+      |> Phoenix.Controller.redirect(to: "/login")
+      |> halt
+    end
+  end
 end
 ```

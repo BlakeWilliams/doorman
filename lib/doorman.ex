@@ -42,6 +42,17 @@ defmodule Doorman do
     auth_module.authenticate(user, password)
   end
 
+  @doc """
+  Returns true if passed in `conn`s `assigns` has a non-nil `:current_user`,
+  otherwise returns false.
+
+  Make sure your pipeline uses a login plug to fetch the current user for this
+  function to work correctly..
+  """
+  def logged_in?(conn) do
+    conn.assigns[:current_user] != nil
+  end
+
   defp repo_module do
     get_module(:repo)
   end

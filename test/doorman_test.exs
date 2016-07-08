@@ -51,4 +51,24 @@ defmodule DoormanTest do
 
     refute Doorman.authenticate(@valid_email, "wrong")
   end
+
+  test "login/1 returns true if the user is logged in" do
+    conn = %Plug.Conn{}
+    |> Plug.Conn.assign(:current_user, %{})
+
+    assert Doorman.logged_in?(conn)
+  end
+
+  test "login/1 returns false if the current_user is nil" do
+    conn = %Plug.Conn{}
+    |> Plug.Conn.assign(:current_user, nil)
+
+    refute Doorman.logged_in?(conn)
+  end
+
+  test "login/1 returns false if the current_user is not present" do
+    conn = %Plug.Conn{}
+
+    refute Doorman.logged_in?(conn)
+  end
 end
