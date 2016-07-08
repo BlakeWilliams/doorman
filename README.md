@@ -114,7 +114,7 @@ defmodule MyApp.SessionController do
     else
       conn
       |> put_flash(:error, "No user found with the provided credentials")
-      |> render "new.html"
+      |> render("new.html")
     end
   end
 end
