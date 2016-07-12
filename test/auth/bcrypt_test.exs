@@ -31,6 +31,21 @@ defmodule Doorman.Auth.BcryptTest do
     refute changeset.changes[:hashed_password]
   end
 
+  test "hashed password field can be customised" do
+    hashed_password_field = Application.get_env(:doorman, :hashed_password_field)
+
+    try do
+      Application.put_env(:doorman, :hashed_password_field, :encrypted_password)
+
+      changeset = FakeUser.create_changeset(%{password: "foobar"})
+
+      refute changeset.changes[:hashed_password]
+      assert changeset.changes[:encrypted_password]
+    after
+      Application.put_env(:doorman, :hashed_password_field, hashed_password_field)
+    end
+  end
+
   test "authenticate returns true when password matches" do
     password = "secure"
     user = %FakeUser{hashed_password: Comeonin.Bcrypt.hashpwsalt(password)}

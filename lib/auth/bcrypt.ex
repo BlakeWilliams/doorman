@@ -34,6 +34,8 @@ defmodule Doorman.Auth.Bcrypt do
   alias Comeonin.Bcrypt
   alias Ecto.Changeset
 
+  @default_hashed_password_field :hashed_password
+
   @doc """
   Takes a changeset and turns the virtual `password` field into a
   `hashed_password` change on the changeset.
@@ -44,7 +46,7 @@ defmodule Doorman.Auth.Bcrypt do
     if password do
       hashed_password = Bcrypt.hashpwsalt(password)
       changeset
-      |> Changeset.put_change(:hashed_password, hashed_password)
+      |> Changeset.put_change(hashed_password_field(), hashed_password)
     else
       changeset
     end
@@ -55,5 +57,12 @@ defmodule Doorman.Auth.Bcrypt do
   """
   def authenticate(user, password) do
     Bcrypt.checkpw(password, user.hashed_password)
+  end
+
+  @doc """
+  Returns the field name used for storing the hashed password.
+  """
+  def hashed_password_field do
+    Application.get_env(:doorman, :hashed_password_field, @default_hashed_password_field)
   end
 end
