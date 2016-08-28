@@ -56,4 +56,12 @@ defmodule Doorman.Auth.Bcrypt do
   def authenticate(user, password) do
     Bcrypt.checkpw(password, user.hashed_password)
   end
+
+  @doc """
+  Simulates password check to help prevent timing attacks. Delegates to
+  `Comeonin.Bcrypt.dummy_checkpw/0`.
+  """
+  def dummy_checkpw() do
+    Bcrypt.dummy_checkpw()
+  end
 end
