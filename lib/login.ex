@@ -38,7 +38,11 @@ defmodule Doorman.Login do
       @doc false
       def call(conn, _opts) do
         user = conn |> __MODULE__.get_current_user
-        conn |> assign(:current_user, user)
+        if user do
+          conn |> assign(:current_user, user)
+        else
+          conn
+        end
       end
 
       defoverridable [init: 1, call: 2]
