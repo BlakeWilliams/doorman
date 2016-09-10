@@ -9,13 +9,19 @@ defmodule DoormanTest do
 
   defmodule FakeSuccessRepo do
     def get_by(Fake, email: "joe@dirt.com") do
-      %{hashed_password: Comeonin.Bcrypt.hashpwsalt("password")}
+      %{
+        email: "joe@dirt.com",
+        hashed_password: Comeonin.Bcrypt.hashpwsalt("password")
+      }
     end
     def get_by(Fake, email: _email), do: nil
 
     def get(Fake, id) do
       if id == 1 do
-        %{hashed_password: Comeonin.Bcypt.hashpwsalt("password")}
+        %{
+          email: "joe@dirt.com",
+          hashed_password: Comeonin.Bcypt.hashpwsalt("password")
+        }
       else
         nil
       end
@@ -29,27 +35,27 @@ defmodule DoormanTest do
        secure_with: Doorman.Auth.Bcrypt,
     }])
 
-    assert Doorman.authenticate(@valid_email, "password")
+    assert Doorman.authenticate(@valid_email, "password").email == @valid_email
   end
 
-  test "authenticate/2 takes invalid email and valid password and returns true" do
+  test "authenticate/2 takes invalid email and valid password and returns nil" do
     Mix.Config.persist([doorman: %{
        repo: FakeSuccessRepo,
        user_module: Fake,
        secure_with: Doorman.Auth.Bcrypt,
     }])
 
-    refute Doorman.authenticate("fake", "password")
+    assert Doorman.authenticate("fake", "password") == nil
   end
 
-  test "authenticate/2 takes valid email and invalid password and returns true" do
+  test "authenticate/2 takes valid email and invalid password and returns nil" do
     Mix.Config.persist([doorman: %{
        repo: FakeSuccessRepo,
        user_module: Fake,
        secure_with: Doorman.Auth.Bcrypt,
     }])
 
-    refute Doorman.authenticate(@valid_email, "wrong")
+    assert Doorman.authenticate(@valid_email, "wrong") == nil
   end
 
   test "login/1 returns true if the user is logged in" do
