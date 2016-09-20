@@ -19,9 +19,9 @@ defmodule Doorman.Mixfile do
   end
 
   defp deps do
-    [{:plug, "~> 1.1.5"},
-     {:comeonin, "~> 2.4.0"},
-     {:ecto, "~> 2.0.0-rc.5", only: :test},
+    [{:plug, "~> 1.0"},
+     {:comeonin, "~> 2.4"},
+     {:ecto, "~> 2.0", only: :test},
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.11", only: :dev}]
   end
