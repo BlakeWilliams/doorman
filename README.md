@@ -39,7 +39,6 @@ Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
 `password` field. `hash_password/1` is used in the changeset to hash our
 password and put it into the changeset as `hashed_password`.
 
-
 ```elixir
 defmodule MyApp.User do
   use MyApp.Web, :model
@@ -62,11 +61,15 @@ end
 ```
 
 Finally, we can add our plug so we can have access to `current_user` on
-`conn.assigns`. A login strategy must to be passed in as an argument so Doorman
-can find the current user.
+`conn.assigns`. 99% of the time that means adding the `Doorman.Login.Session`
+plug to your `:browser` pipeline:
 
 ```elixir
-plug Doorman.Login.Session
+pipeline :browser do
+  # ...
+  plug Doorman.Login.Session
+  # ...
+end
 ```
 
 ### Creating Users
