@@ -101,7 +101,7 @@ end
 
 ### Logging in users
 
-To login users we can use `Doorman.authenticate` and `Doorman.Session.login/2`.
+To login users we can use `Doorman.authenticate` and `Doorman.Login.Session.login/2`.
 
 ```elixir
 defmodule MyApp.SessionController do
