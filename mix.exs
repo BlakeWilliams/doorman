@@ -2,16 +2,18 @@ defmodule Doorman.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :doorman,
-     version: "0.5.2",
-     elixir: "~> 1.2",
-     elixirc_paths: elixirc_paths(Mix.env),
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     description: "Tools to make Elixir authentication simple and flexible",
-     package: package,
-     docs: [extras: ["README.md"], main: "readme"],
-     deps: deps]
+    [
+      app: :doorman,
+      version: "0.5.2",
+      elixir: "~> 1.2",
+      elixirc_paths: elixirc_paths(Mix.env),
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      description: "Tools to make Elixir authentication simple and flexible",
+      package: package(),
+      docs: [extras: ["README.md"], main: "readme"],
+      deps: deps(),
+   ]
   end
 
   def application do
@@ -19,11 +21,13 @@ defmodule Doorman.Mixfile do
   end
 
   defp deps do
-    [{:plug, "~> 1.0"},
-     {:comeonin, "~> 2.4"},
-     {:ecto, "~> 2.0", only: :test},
-     {:earmark, "~> 0.1", only: :dev},
-     {:ex_doc, "~> 0.11", only: :dev}]
+    [
+      {:comeonin, "~> 2.4"},
+      {:earmark, "~> 0.1", only: :dev},
+      {:ecto, "~> 2.0", only: :test},
+      {:ex_doc, "~> 0.11", only: :dev},
+      {:plug, "~> 1.0"},
+   ]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support", "test"]

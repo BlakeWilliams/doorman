@@ -24,12 +24,12 @@ defmodule Doorman do
 
   def authenticate(user_module \\ nil, email, password) do
     user_module = user_module || get_user_module()
-    user = repo_module.get_by(user_module, email: email)
+    user = repo_module().get_by(user_module, email: email)
     cond do
       user && authenticate_user(user, password) -> user
       user -> nil
       true ->
-        auth_module.dummy_checkpw()
+        auth_module().dummy_checkpw()
         nil
     end
   end
@@ -49,7 +49,7 @@ defmodule Doorman do
   ```
   """
   def authenticate_user(user, password) do
-    auth_module.authenticate(user, password)
+    auth_module().authenticate(user, password)
   end
 
   @doc """
