@@ -2,12 +2,16 @@ defmodule DoormanTest do
   use Doorman.ConnCase
   doctest Doorman
 
-  @valid_id 1
-  @invalid_id 2
-
   @valid_email "joe@dirt.com"
+  @valid_alternate_email "brandy@dirt.com"
 
   defmodule FakeSuccessRepo do
+    def get_by(OtherFake, email: "brandy@dirt.com") do
+      %{
+        email: "brandy@dirt.com",
+        hashed_password: Comeonin.Bcrypt.hashpwsalt("password")
+      }
+    end
     def get_by(Fake, email: "joe@dirt.com") do
       %{
         email: "joe@dirt.com",
@@ -28,7 +32,7 @@ defmodule DoormanTest do
     end
   end
 
-  test "authenticate/2 takes valid email and valid password and returns true" do
+  test "authenticate/3 takes valid email and valid password and returns true" do
     Mix.Config.persist([doorman: %{
        repo: FakeSuccessRepo,
        user_module: Fake,
@@ -38,7 +42,7 @@ defmodule DoormanTest do
     assert Doorman.authenticate(@valid_email, "password").email == @valid_email
   end
 
-  test "authenticate/2 takes invalid email and valid password and returns nil" do
+  test "authenticate/3 takes invalid email and valid password and returns nil" do
     Mix.Config.persist([doorman: %{
        repo: FakeSuccessRepo,
        user_module: Fake,
@@ -48,7 +52,7 @@ defmodule DoormanTest do
     assert Doorman.authenticate("fake", "password") == nil
   end
 
-  test "authenticate/2 takes valid email and invalid password and returns nil" do
+  test "authenticate/3 takes valid email and invalid password and returns nil" do
     Mix.Config.persist([doorman: %{
        repo: FakeSuccessRepo,
        user_module: Fake,
@@ -56,6 +60,17 @@ defmodule DoormanTest do
     }])
 
     assert Doorman.authenticate(@valid_email, "wrong") == nil
+  end
+
+  test "authenticate/3 takes an optional user module" do
+    Mix.Config.persist([doorman: %{
+       repo: FakeSuccessRepo,
+       user_module: Fake,
+       secure_with: Doorman.Auth.Bcrypt,
+    }])
+
+    user = Doorman.authenticate(OtherFake, @valid_alternate_email, "password")
+    assert user.email == @valid_alternate_email
   end
 
   test "login/1 returns true if the user is logged in" do

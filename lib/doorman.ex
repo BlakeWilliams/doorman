@@ -14,8 +14,16 @@ defmodule Doorman do
   ```
   Doorman.authenticate("joe@dirt.com", "brandyr00lz")
   ```
+
+  If you want to authenticate other modules, you can pass in the module directly.
+
+  ```
+  Doorman.authenticate(Customer, "brandy@dirt.com", "super-password")
+  ```
   """
-  def authenticate(email, password) do
+
+  def authenticate(user_module \\ nil, email, password) do
+    user_module = user_module || get_user_module()
     user = repo_module.get_by(user_module, email: email)
     cond do
       user && authenticate_user(user, password) -> user
@@ -59,7 +67,7 @@ defmodule Doorman do
     get_module(:repo)
   end
 
-  defp user_module do
+  defp get_user_module do
     get_module(:user_module)
   end
 
