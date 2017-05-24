@@ -35,6 +35,11 @@ First generate a user model with a `hashed_password` field.
 $ mix phoenix.gen.model User users email hashed_password
 ```
 
+Please note: we recommend using [citext] (or equivalent for non-postgres
+databases) for the email column so that your email is case insensitive.
+
+[citext]: https://www.postgresql.org/docs/9.1/static/citext.html
+
 Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
 `password` field. `hash_password/1` is used in the changeset to hash our
 password and put it into the changeset as `hashed_password`.
