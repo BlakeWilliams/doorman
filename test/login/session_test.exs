@@ -5,10 +5,14 @@ defmodule Doorman.Login.SessionTest do
 
   @valid_id 1
   @invalid_id 2
+  @valid_secret "abc"
+  @invalid_secret "def"
 
   defmodule FakeSuccessRepo do
-    def get(Fake, id) do
-      if id == 1 do
+    def get_by(Fake, opts) do
+      id = Keyword.get(opts, :id)
+      secret = Keyword.get(opts, :session_secret)
+      if id == 1 && secret == "abc" do
         %{}
       else
         nil
@@ -17,18 +21,17 @@ defmodule Doorman.Login.SessionTest do
   end
 
   test "login/1 sets :user_id on conn.session", %{conn: conn} do
-    conn
-    |> Plug.Conn.put_session(:user_id, @valid_id)
-
-    conn = Session.login(conn, %{id: 1})
+    conn = Session.login(conn, %{id: 1, session_secret: "abc"})
 
     assert Plug.Conn.get_session(conn, :user_id) == 1
+    assert Plug.Conn.get_session(conn, :session_secret) == "abc"
   end
 
   test "get_current_user/1 returns user when exists", %{conn: conn} do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
       |> Plug.Conn.put_session(:user_id, @valid_id)
+      |> Plug.Conn.put_session(:session_secret, @valid_secret)
 
     assert Session.get_current_user(conn)
   end
@@ -37,6 +40,25 @@ defmodule Doorman.Login.SessionTest do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
       |> Plug.Conn.put_session(:user_id, @invalid_id)
+      |> Plug.Conn.put_session(:session_secret, @valid_secret)
+
+    refute Session.get_current_user(conn)
+  end
+  
+  test "get_current_user/1 returns nil when session_key does not match", %{conn: conn} do
+    Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
+    conn = conn
+      |> Plug.Conn.put_session(:user_id, @valid_id)
+      |> Plug.Conn.put_session(:session_secret, @invalid_secret)
+
+    refute Session.get_current_user(conn)
+  end
+  
+  test "get_current_user/1 returns nil when session_key and id do not match", %{conn: conn} do
+    Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
+    conn = conn
+      |> Plug.Conn.put_session(:user_id, @invalid_id)
+      |> Plug.Conn.put_session(:session_secret, @invalid_secret)
 
     refute Session.get_current_user(conn)
   end

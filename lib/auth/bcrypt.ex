@@ -39,7 +39,7 @@ defmodule Doorman.Auth.Bcrypt do
   `hashed_password` change on the changeset.
   """
   def hash_password(changeset) do
-    password = Ecto.Changeset.get_change(changeset, :password)
+    password = Changeset.get_change(changeset, :password)
 
     if password do
       hashed_password = Bcrypt.hashpwsalt(password)
