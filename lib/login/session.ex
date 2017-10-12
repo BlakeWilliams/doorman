@@ -31,7 +31,7 @@ defmodule Doorman.Login.Session do
     repo = Application.get_env(:doorman, :repo)
     user_module = Application.get_env(:doorman, :user_module)
 
-    if not is_nil(id) and not is_nil(secret) do
+    if !is_nil(id) && !is_nil(secret) do
       repo.get_by(user_module, [id: id, session_secret: secret])
     end
   end
