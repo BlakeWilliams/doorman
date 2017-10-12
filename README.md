@@ -29,10 +29,10 @@ config :doorman,
 
 ## Phoenix Quick Start
 
-First generate a user model with a `hashed_password` field.
+First generate a user model with a `hashed_password` and `session_secret` field.
 
 ```sh
-$ mix phoenix.gen.model User users email hashed_password
+$ mix phoenix.gen.model User users email hashed_password session_secret
 ```
 
 Please note: we recommend using [citext] (or equivalent for non-postgres
@@ -53,6 +53,7 @@ defmodule MyApp.User do
     field :email, :string
     field :hashed_password, :string
     field :password, :string, virtual: true
+    field :session_secret, :string
 
     timestamps
   end
@@ -79,11 +80,12 @@ end
 
 ### Creating Users
 
-To create a user we can use the `MyApp.create_changeset/2` function we defined.
+To create a user we can use the `MyApp.create_changeset/2` function we defined. Here we'll also add the `session_secret` to the user, which is only needed when creating an user or in case of compromised sessions.
 
 ```elixir
 defmodule MyApp.UserController do
   use MyApp.Web, :controller
+  alias Doorman.Auth.Secret
   alias MyApp.User
 
   def new(conn, _params) do
@@ -92,7 +94,10 @@ defmodule MyApp.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    changeset = User.create_changeset(%User{}, user_params)
+    changeset = 
+      %User{}
+      |> User.create_changeset(user_params)
+      |> Secret.put_session_secret()
 
     case Repo.insert(changeset) do
       {:ok, user} ->
@@ -116,7 +121,7 @@ defmodule MyApp.SessionController do
   def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
     if user = Doorman.authenticate(email, password) do
       conn
-      |> login(user) # Sets :user_id on conn's session
+      |> login(user) # Sets :user_id and :session_secret on conn's session
       |> put_flash(:notice, "Successfully logged in")
       |> redirect(to: "/")
     else
