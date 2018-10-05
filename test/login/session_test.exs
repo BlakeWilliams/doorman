@@ -8,15 +8,29 @@ defmodule Doorman.Login.SessionTest do
   @valid_secret "abc"
   @invalid_secret "def"
 
+  defmodule SuccessRepoTemplate do
+    def generate_get_by(expected_secret) do
+      fn (Fake, opts) ->
+        id = Keyword.get(opts, :id)
+        secret = Keyword.get(opts, :session_secret)
+        if id == 1 && secret == expected_secret do
+          %{}
+        else
+          nil
+        end
+      end
+    end
+  end
+
   defmodule FakeSuccessRepo do
     def get_by(Fake, opts) do
-      id = Keyword.get(opts, :id)
-      secret = Keyword.get(opts, :session_secret)
-      if id == 1 && secret == "abc" do
-        %{}
-      else
-        nil
-      end
+      SuccessRepoTemplate.generate_get_by("abc").(Fake, opts)
+    end
+  end
+
+  defmodule NilSuccessRepo do
+    def get_by(Fake, opts) do
+      SuccessRepoTemplate.generate_get_by(nil).(Fake, opts)
     end
   end
 
@@ -36,6 +50,33 @@ defmodule Doorman.Login.SessionTest do
     assert Session.get_current_user(conn)
   end
 
+  test "get_current_user/1 accepts nil as a session_secret", %{conn: conn} do
+    Mix.Config.persist([doorman: %{repo: NilSuccessRepo, user_module: Fake}])
+    conn = conn
+      |> Plug.Conn.put_session(:user_id, @valid_id)
+      |> Plug.Conn.put_session(:session_secret, nil)
+
+    assert Session.get_current_user(conn)
+  end
+
+  test "get_current_user/1 won't accept just any session_secret just because this is set to nil", %{conn: conn} do
+    Mix.Config.persist([doorman: %{repo: NilSuccessRepo, user_module: Fake}])
+    conn = conn
+      |> Plug.Conn.put_session(:user_id, @valid_id)
+      |> Plug.Conn.put_session(:session_secret, "abc")
+
+    refute Session.get_current_user(conn)
+  end
+
+  test "get_current_user/1 won't accept a nil session_secret if this is not set to nil", %{conn: conn} do
+    Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
+    conn = conn
+      |> Plug.Conn.put_session(:user_id, @valid_id)
+      |> Plug.Conn.put_session(:session_secret, nil)
+
+    refute Session.get_current_user(conn)
+  end
+
   test "get_current_user/1 returns nil when user does not exist", %{conn: conn} do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
@@ -44,7 +85,7 @@ defmodule Doorman.Login.SessionTest do
 
     refute Session.get_current_user(conn)
   end
-  
+
   test "get_current_user/1 returns nil when session_key does not match", %{conn: conn} do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
@@ -53,7 +94,7 @@ defmodule Doorman.Login.SessionTest do
 
     refute Session.get_current_user(conn)
   end
-  
+
   test "get_current_user/1 returns nil when session_key and id do not match", %{conn: conn} do
     Mix.Config.persist([doorman: %{repo: FakeSuccessRepo, user_module: Fake}])
     conn = conn
