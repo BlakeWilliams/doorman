@@ -4,7 +4,7 @@ defmodule Doorman.Mixfile do
   def project do
     [
       app: :doorman,
-      version: "0.6.0",
+      version: "0.6.1",
       elixir: "~> 1.2",
       elixirc_paths: elixirc_paths(Mix.env),
       build_embedded: Mix.env == :prod,
@@ -23,9 +23,9 @@ defmodule Doorman.Mixfile do
   defp deps do
     [
       {:comeonin, "~> 2.4"},
-      {:earmark, "~> 0.1", only: :dev},
+      {:earmark, "~> 1.1", only: :dev},
       {:ecto, "~> 2.0", only: :test},
-      {:ex_doc, "~> 0.11", only: :dev},
+      {:ex_doc, "~> 0.19", only: :dev},
       {:plug, "~> 1.0"},
    ]
   end
