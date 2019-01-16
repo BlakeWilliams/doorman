@@ -4,7 +4,7 @@ defmodule Doorman.Mixfile do
   def project do
     [
       app: :doorman,
-      version: "0.6.1",
+      version: "0.6.2",
       elixir: "~> 1.2",
       elixirc_paths: elixirc_paths(Mix.env),
       build_embedded: Mix.env == :prod,
