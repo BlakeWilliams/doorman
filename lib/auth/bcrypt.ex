@@ -12,7 +12,7 @@ defmodule Doorman.Auth.Bcrypt do
 
   ```
   defmodule User do
-    import Doorman.Auth.Bcrypt, only: [hash_password: 1]
+    import Doorman.Auth.Bcrypt, only: [hash_password: 2]
 
     import Ecto.Changeset
 
@@ -36,15 +36,39 @@ defmodule Doorman.Auth.Bcrypt do
 
   @doc """
   Takes a changeset and turns the virtual `password` field into a
-  `hashed_password` change on the changeset.
+  `hashed_password` change on the changeset. Also, it can take an
+  optional Map with the name of the field that maps to the database
+
+  ## Example
+
+  ```
+  defmodule User do
+    import Doorman.Auth.Bcrypt, only: [hash_password: 2]
+
+    import Ecto.Changeset
+
+    def create_changeset(struct, changes) do
+      struct
+        |> cast(changes, ~w(email password))
+        |> hash_password
+    end
+
+    def other_create_changeset(struct, changes) do
+      struct
+        |> cast(changes, ~w(email password))
+        |> hash_password(name: :my_password_hash)
+    end
+  end
+  ```
   """
-  def hash_password(changeset) do
+  def hash_password(changeset, opts \\ %{}) do
     password = Changeset.get_change(changeset, :password)
+    field_name = opts[:name] || :hashed_password
 
     if password do
       hashed_password = Bcrypt.hashpwsalt(password)
       changeset
-      |> Changeset.put_change(:hashed_password, hashed_password)
+      |> Changeset.put_change(field_name, hashed_password)
     else
       changeset
     end
