@@ -31,7 +31,7 @@ defmodule Doorman.Auth.BcryptTest do
     def create_changeset(changes) do
       %__MODULE__{}
       |> cast(changes, ~w(password))
-      |> Doorman.Auth.Bcrypt.hash_password(name: :password_hash)
+      |> Doorman.Auth.Bcrypt.hash_password(field_name: :password_hash)
     end
   end
 

@@ -12,7 +12,7 @@ defmodule Doorman.Auth.Bcrypt do
 
   ```
   defmodule User do
-    import Doorman.Auth.Bcrypt, only: [hash_password: 2]
+    import Doorman.Auth.Bcrypt, only: [hash_password: 1]
 
     import Ecto.Changeset
 
@@ -56,14 +56,17 @@ defmodule Doorman.Auth.Bcrypt do
     def other_create_changeset(struct, changes) do
       struct
         |> cast(changes, ~w(email password))
-        |> hash_password(name: :my_password_hash)
+        |> hash_password(field_name: :my_password_hash)
     end
   end
   ```
   """
-  def hash_password(changeset, opts \\ %{}) do
+  def hash_password(changeset) do
+    hash_password(changeset, field_name: :hashed_password)
+  end
+
+  def hash_password(changeset, %{"field_name" => field_name}) do
     password = Changeset.get_change(changeset, :password)
-    field_name = opts[:name] || :hashed_password
 
     if password do
       hashed_password = Bcrypt.hashpwsalt(password)
