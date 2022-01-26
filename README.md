@@ -41,13 +41,15 @@ databases) for the email column so that your email is case insensitive.
 [citext]: https://www.postgresql.org/docs/9.1/static/citext.html
 
 Next, use `Doorman.Auth.Bcrypt` in your new `User` module and add a virtual
-`password` field. `hash_password/1` is used in the changeset to hash our
-password and put it into the changeset as `hashed_password`.
+`password` field. `hash_password/2` is used in the changeset to hash our
+password and put it into the changeset as `hashed_password`. Also, you can
+provide a map to `hash_password/2` in the form of `%{name: :field_name}` if 
+you want to customize which field to save the hashed password.
 
 ```elixir
 defmodule MyApp.User do
   use MyApp.Web, :model
-  import Doorman.Auth.Bcrypt, only: [hash_password: 1]
+  import Doorman.Auth.Bcrypt, only: [hash_password: 2]
 
   schema "users" do
     field :email, :string
